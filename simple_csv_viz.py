@@ -1,5 +1,3 @@
-# 파일명: simple_csv_viz.py
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,13 +12,14 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     st.write("데이터 미리보기:", df.head())
 
-    # 2. 컬럼별 타입 확인
+    # 숫자형/범주형 컬럼 분리
     num_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
     cat_cols = df.select_dtypes(include=['object']).columns.tolist()
+
     st.write(f"숫자형 컬럼: {num_cols}")
     st.write(f"범주형 컬럼: {cat_cols}")
 
-    # 3. 숫자형 컬럼 히스토그램
+    # 숫자형 히스토그램
     st.subheader("숫자형 컬럼 히스토그램")
     for col in num_cols:
         fig, ax = plt.subplots()
@@ -28,18 +27,17 @@ if uploaded_file is not None:
         ax.set_title(f"{col} 히스토그램")
         st.pyplot(fig)
 
-    # 4. 범주형 컬럼 막대그래프
+    # 범주형 막대그래프
     st.subheader("범주형 컬럼 막대그래프")
     for col in cat_cols:
         fig = px.bar(df[col].value_counts().reset_index(), x='index', y=col)
         fig.update_layout(title=f"{col} 막대그래프", xaxis_title=col, yaxis_title="Count")
         st.plotly_chart(fig)
 
-    # 5. HTML로 저장 및 다운로드
+    # HTML 다운로드
     st.subheader("HTML 다운로드")
     html_buffer = io.StringIO()
-    html_buffer.write("<html><body>")
-    html_buffer.write("<h1>CSV 자동 시각화 결과</h1>")
+    html_buffer.write("<html><body><h1>CSV 자동 시각화 결과</h1>")
     for col in num_cols:
         fig, ax = plt.subplots()
         df[col].hist(ax=ax, bins=20, color='skyblue')
@@ -53,4 +51,5 @@ if uploaded_file is not None:
         html_buffer.write(f"<h2>{col} 막대그래프</h2><iframe src='{col}_bar.html' width='600' height='400'></iframe><br>")
     html_buffer.write("</body></html>")
 
-    st.download_button("HTML 다운로드", data=html_buffer.getvalue(), file_name="visualization.html", mime="text/html")
+    st.download_button("HTML 다운로드", data=html_buffer.getvalue(),
+                       file_name="visualization.html", mime="text/html")
