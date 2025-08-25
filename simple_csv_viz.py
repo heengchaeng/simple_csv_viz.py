@@ -5,9 +5,9 @@ import plotly.express as px
 import numpy as np
 import io
 import base64
-
+#제목
 st.title("CSV 파일 자동 시각화")
-
+#파일 업로드창 
 uploaded_file = st.file_uploader("CSV 파일 업로드", type=["csv"])
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
@@ -17,9 +17,9 @@ if uploaded_file is not None:
     cat_cols = df.select_dtypes(include=['object']).columns.tolist()
     st.write(f"숫자형 컬럼: {num_cols}")
     st.write(f"범주형 컬럼: {cat_cols}")
-
+#히스토그램
     st.subheader("숫자형 컬럼 히스토그램")
-    fig_bytes_list = []  # HTML 다운로드용 이미지 리스트
+    fig_bytes_list = []  
     for col in num_cols:
         fig, ax = plt.subplots()
         data = pd.to_numeric(df[col], errors='coerce')
@@ -29,7 +29,7 @@ if uploaded_file is not None:
             ax.set_title(f"{col} 히스토그램")
             st.pyplot(fig)
 
-            # 메모리 버퍼에 이미지 저장
+            # 메모리에 이미지 저장
             buf = io.BytesIO()
             fig.savefig(buf, format='png')
             buf.seek(0)
@@ -37,7 +37,7 @@ if uploaded_file is not None:
         else:
             st.write(f"{col} 컬럼에는 유효한 숫자가 없습니다.")
         plt.close(fig)
-
+#막대그래프
     st.subheader("범주형 컬럼 막대그래프")
     html_plotly_list = []  # HTML 다운로드용 Plotly
     for col in cat_cols:
